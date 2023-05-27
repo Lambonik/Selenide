@@ -1,5 +1,8 @@
 package ru.netology;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Condition.*;
@@ -22,35 +25,46 @@ public class FormTest {
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Казань");
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.LEFT_SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(generateDate(3, "dd.MM.yyyy"));
+        int dayToAdd = 3;
+        String meetingDate = generateDate(dayToAdd, "dd.MM.yyyy");
+        $("[data-test-id='date'] input").setValue(meetingDate);
         $("[data-test-id='name'] input").setValue("Иван Петров");
         $("[data-test-id='phone'] input").setValue("+79110001122");
         $("[data-test-id='agreement']").click();
         $$("button").find(exactText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + meetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
+
     }
 
     @Test
-    void TestFormSendingSelectedCityInList() {
+    void testFormSendingSelectedCityInList() {
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Ка").click();
         $$(".menu-item").find(exactText("Казань")).click();
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.LEFT_SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").setValue(generateDate(3, "dd.MM.yyyy"));
+        int dayToAdd = 3;
+        String meetingDate = generateDate(dayToAdd, "dd.MM.yyyy");
+        $("[data-test-id='date'] input").setValue(meetingDate);
         $("[data-test-id='name'] input").setValue("Иван Петров");
         $("[data-test-id='phone'] input").setValue("+79110001122");
         $("[data-test-id='agreement']").click();
         $$("button").find(exactText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + meetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 
     @Test
-    void TestFormSendingSelectedDateInFormCalendarIfMeetingInNextMonth() {
+    void testFormSendingSelectedDateInFormCalendarIfMeetingInNextMonth() {
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Казань");
         $("[data-test-id='date'] .icon-button").click();
-        String meetingDay = generateDate(7, "d");
-        int meetingMonth = Integer.parseInt(generateDate(7, "M"));
+        int dayToAdd = 7;
+        String meetingDate = generateDate(dayToAdd, "dd.MM.yyyy");
+        String meetingDay = generateDate(dayToAdd, "d");
+        int meetingMonth = Integer.parseInt(generateDate(dayToAdd, "M"));
         int nowMonth = Integer.parseInt(generateDate(0, "M"));
         if (meetingMonth > nowMonth) {
             $("[data-step='1'].calendar__arrow_direction_right").click();
@@ -63,16 +77,20 @@ public class FormTest {
         $("[data-test-id='phone'] input").setValue("+79110001122");
         $("[data-test-id='agreement']").click();
         $$("button").find(exactText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + meetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 
     @Test
-    void TestFormSendingSelectedDateInFormCalendarIfMeetingInThisMonth() {
+    void testFormSendingSelectedDateInFormCalendarIfMeetingInThisMonth() {
         open("http://localhost:9999");
         $("[data-test-id='city'] input").setValue("Казань");
         $("[data-test-id='date'] .icon-button").click();
-        String meetingDay = generateDate(4, "d");
-        int meetingMonth = Integer.parseInt(generateDate(4, "M"));
+        int dayToAdd = 4;
+        String meetingDate = generateDate(dayToAdd, "dd.MM.yyyy");
+        String meetingDay = generateDate(dayToAdd, "d");
+        int meetingMonth = Integer.parseInt(generateDate(dayToAdd, "M"));
         int nowMonth = Integer.parseInt(generateDate(0, "M"));
         if (meetingMonth > nowMonth) {
             $("[data-step='1'].calendar__arrow_direction_right").click();
@@ -85,6 +103,8 @@ public class FormTest {
         $("[data-test-id='phone'] input").setValue("+79110001122");
         $("[data-test-id='agreement']").click();
         $$("button").find(exactText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(visible, Duration.ofSeconds(15));
+        $(".notification__content")
+                .shouldHave(Condition.text("Встреча успешно забронирована на " + meetingDate), Duration.ofSeconds(15))
+                .shouldBe(Condition.visible);
     }
 }
